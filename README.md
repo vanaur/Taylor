@@ -38,3 +38,5 @@ Indiquez ensuite ce fichier à Taylor, dans le terminal : `./Taylor fichier` (ou
 Voici le résultat, Taylor l'affiche dans la console :
 
 ![](https://i.ibb.co/cbNR0Zp/dfdf.png)
+
+La valeur est associée à l'application de la formule sur la liste de données entrées, l'erreur absolue est calculée par le procédé décrit plus haut (le programme dérive tout seul, il n'y a pas besoin de donner une version déjà dérivée de la formule), l'erreur relative correspond au quotient de l'erreur absolue par le résultat obtenu, donné en pourcent (plus le pourcentage est grand, plus l'erreur est importante) et, enfin, la dernière colonne résume le tout sous la forme la plus utile. Remarquez aussi qu'une valeur moyenne des résultats est calculée, bien que cela n'est pas touours nécessaire (et cela n'a d'ailleurs pas souvent de sens lorsque les données sont indépendantes, comme dans l'exemple).
