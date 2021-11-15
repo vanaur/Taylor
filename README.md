@@ -34,3 +34,7 @@ Measures: L = [5, 10, 15, 25, 30, 35, 40, 45, 50] # On a effectué 9 mesures sur
 ```
 
 Indiquez ensuite ce fichier à Taylor, dans le terminal : `./Taylor fichier` (ou `Taylor.exe fichier` sur Windows).
+
+Voici le résultat, Taylor l'affiche dans la console :
+
+![](https://i.ibb.co/cbNR0Zp/dfdf.png)
