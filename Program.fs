@@ -8,6 +8,8 @@ open System
 open FParsec
 open IndentParser
 
+Console.OutputEncoding <- Text.Encoding.UTF8
+
 // On considère l'AST des expressions suivant
 type Expression =
     | Constant of Number
@@ -204,8 +206,8 @@ let parseTopLevel =
      attempt parseSignificantDigits <|>
      parseDefMeasures) .>> ws
 
-let parseProgram = blockOf (ws >>. parseTopLevel) .>> eof
-    //(sepEndBy parseTopLevel (newline >>. ws)) .>> eof
+let parseProgram = ws >>. blockOf (ws >>. parseTopLevel) .>> eof
+
 
 //////////////////////
 ///   Evaluation   ///
@@ -440,10 +442,36 @@ let relativeError (err: Number) (value: Number) = 100. * (err / value |> abs)
 // Calcul de la moyenne d'une liste de nombre
 let average (xs: Number list) = xs |> List.average
 
+// A partir d'un résultat et de son erreur absolue, renvoie un tuple du résultat
+// et de son erreur, tout deux formatés (string) correctement
+let showWellFormatedResult (value: Number) (abserr: Number) =
+
+    let a = sprintf "%g" (Math.Round(abserr, 2))
+    let b = sprintf "%g" (Math.Round(value, 2))
+
+    let wellize (ds: string array) =
+        if ds.Length = 1
+        then ".00"
+        else let digits = ds.[1]
+             if digits.Length = 1
+             then sprintf ".%c0" digits.[0]
+             else "." + digits
+
+    let getFmt (x: string) =
+        let splited = x.Split [|'.'|]
+        let decimals = splited.[0]
+        let digits = wellize splited
+        decimals + digits
+
+    let err = getFmt a
+    let val' = getFmt b
+
+    val', err
+
 // Affiche les résultats
 let runTaylor (quantityName: string) expr (measures: SNL list) (errors: SNL) =
-    printfn "\n> Calcul de %d valeurs pour %s = %s\n" (measures.Length) quantityName (pprint expr)
 
+    printfn "\n> Calcul de %d valeurs pour %s = %s\n" (measures.Length) quantityName (pprint expr)
     printfn "\tRésultat\tErr absolue\tErr relative\tEcriture normale\n"
 
     let mutable finalResults = []
@@ -452,15 +480,20 @@ let runTaylor (quantityName: string) expr (measures: SNL list) (errors: SNL) =
     for measure in measures do
         let result = compute expr measure
         let abserr = absoluteError expr measure errors
+
+        let fmtVal, fmtErr = showWellFormatedResult result abserr
+
         let relerr = relativeError abserr result
-        printfn "\t%.3g\t\t%.3g\t\t%.3g%%\t\t│ %s = (%.3g ± %.3g)" result abserr relerr quantityName result abserr
+        printfn "\t%s\t\t%s\t\t%.3g%%\t\t│ %s = (%s ± %s)" fmtVal fmtErr relerr quantityName fmtVal fmtErr
         finalResults <- finalResults @ [result]
         finalErrors <- finalErrors @ [abserr]
 
     let averageResult = average finalResults
     let averageError = average finalErrors
 
-    printfn "\n> Moyenne des résultats : %.3g ± %.3g" averageResult averageError
+    let fmtAVal, fmtAErr = showWellFormatedResult averageResult averageError
+
+    printfn "\n> Moyenne des résultats : %s ± %s" fmtAVal fmtAErr
 
     printfn ""
 
@@ -522,42 +555,33 @@ let handle (program: TopLevel list) =
 
     runTaylor (fst function'.Value) (snd function'.Value) linked errors
 
+let usage =
+ "\n  Usage: Taylor est un logiciel console, c'est-à-dire qu'il\n" +
+ "         fonctionne uniquement via le terminal !\n\n" +
+ "   Pour utiliser Taylor, ouvrez un terminal dans le dossier\n" +
+ "   contennat le programme (Taylor.exe et Taylor.pdb), ensuite\n" +
+ "   créez le fichier contenant vos données. Il vous suffit ensuite\n" +
+ "   d'écrire ceci dans le terminal:\n\n" +
+ "      * Sur Windows:  Taylor.exe FICHIER\n" +
+ "      * Sur Mac:      ./Taylor FICHIER\n" +
+ "      * Sur Linux:    ./Taylor FICHIER\n\n" +
+ "   Par exemple,  'Taylor.exe donnees.txt'\n"
+
 [<EntryPoint>]
 let main argv =
-
-    // let test1 = let rand = Random() in [for _ in 1..2500 do yield rand.NextDouble() + 11.]
-    // let test2 = let rand = Random() in [for _ in 1..2500 do yield rand.NextDouble() + 11.]
-
-
-    let p = runParserOnFile parseProgram () "hello.txt"
+    if argv.Length < 1
+    then printfn "%s" usage; exit 0
     
-    match p with
+    let file = argv.[0]
+
+    if not <| IO.File.Exists file
+    then printfn "Malheureusement, le fichier '%s' n'a pas été trouvé" file; exit 0
+
+    match runParserOnFile parseProgram () file with
     | Success(program, _, _) -> handle program
     | Failure(msg, _, _) -> printfn "Erreur: %s" msg
 
-    //let p = runParserOnFile parseProgram () "hello.txt" System.Text.Encoding.UTF8
-    // printfn "%A" p
-
-    //let expr = "n * R * T"
-    //let parsed = (runTaylorParser expr).Value
-    //let s = compute parsed ["p", 10.; "V", 300.; "n", 1.; "T", 300.; "R", 8.3145]
-//
-    //printfn "%g" s
-
-    // let expr = "33 * a + b * sin(a + c)"
-    // let m1 = [for i in 1..10 do yield float i]
-    // let m2 = [for i in 1..10 do yield float i]
-    // let m3 = [for i in 1..10 do yield float i]
-    // let errors = ["a", 0.1; "b", 0.8; "c", 0.8]
-// 
-    // let m1' = attribMeasuresToVariable "a" m1
-    // let m2' = attribMeasuresToVariable "b" m1
-    // let m3' = attribMeasuresToVariable "c" m1
-// 
-    // let linked = linkMeasures [m1'; m2'; m3']
-// 
-    // let parsed = runTaylorParser expr
-    // 
-    // runTaylor "j" (parsed.Value) linked errors
+    printfn "Appuyez sur une touche pour fermer le programme"
+    Console.ReadKey() |> ignore
 
     0
