@@ -40,12 +40,3 @@ Voici le résultat, Taylor l'affiche dans la console :
 ![](https://i.ibb.co/cbNR0Zp/dfdf.png)
 
 La valeur est associée à l'application de la formule sur la liste de données entrées, l'erreur absolue est calculée par le procédé décrit plus haut (le programme dérive tout seul, il n'y a pas besoin de donner une version déjà dérivée de la formule), l'erreur relative correspond au quotient de l'erreur absolue par le résultat obtenu, donné en pourcent (plus le pourcentage est grand, plus l'erreur est importante) et, enfin, la dernière colonne résume le tout sous la forme la plus utile. Remarquez aussi qu'une valeur moyenne des résultats est calculée, bien que cela n'est pas touours nécessaire (et cela n'a d'ailleurs pas souvent de sens lorsque les données sont indépendantes, comme dans l'exemple).
-
-## Exemple plus parlant sur l'importance des erreurs
-Considérons un cube d'arêtes `d = 10 cm`, mesurées avec une règle graduée au millimètre. On peut donc considérer que l'incertitude de mesure est de l'ordre du millimètre : `εd = 0.1 cm`. Pour obtenir le volume de ce cube, il suffit d'appliquer la formule suivante : `v = d³`. Nous avons donc `v = 10³ = 1000 cm³ = 1L`. Calculons l'erreur, on a que la dérivée de `d³` est `3d²`, à cela multiplions par l'incertitude de l'instrument, on a alors `εv = |3d²|0.1 = |3(1)²|0.1 = 0.3 L` (on utilise les unitées SI). Nous avons donc `v = (1 ± 0.3) L`. Cela nous fait une erreur relative de 3%.
-
-Imaginons maintenant que le cube soit tout petit, disons `d = 0.5 cm` d'arrêtes. Avec les mêmes arguments que précédement, nous trouvons comme résultat `v = (0.125 ± 0.075) L`, soit une erreur relative de **60%**.
-
-Considérons un cube très grand, de `d = 50 cm` d'arrêtes, nous avons `v = (125000 ± 750) L`, soit une erreur relative de **0.6**%. La différence est énorme. Dans un cas, nous avons une mesure qui est à *60% incertaine*, dans l'autre, à *99.4% certaine*.
-
-Ne pas communiquer ces informations d'incertitude revient donc, comme dit plus tôt, à ne pas considérer le fait que la mesure est réelle et non théorique. On remarque d'ailleurs que plus la quantité physique à mesurer est "grande" par rapport à l'incertitude sur l'instrument, moins cette erreur sera significative.
