@@ -30,10 +30,10 @@ Constant: g = 9.81 # On défini une constante, ici la constante de l'intensité 
 
 Error: L = 0.1 # On définit l'erreur de mesure de la longueur à 0.1 (on ne précise pas les unités, c'est à l'utilisateur de savoir ce qu'il manipule)
 
-Measures: L = [5, 10, 15, 25, 30, 35, 40, 45, 50] # On a effectué 9 mesures sur la longueur de la corde
+Measures: L = 5, 10, 15, 25, 30, 35, 40, 45, 50 # On a effectué 9 mesures sur la longueur de la corde
 ```
 
-Indiquez ensuite ce fichier à Taylor, dans le terminal : `./Taylor fichier` (ou `Taylor.exe fichier` sur Windows).
+Indiquez ensuite ce fichier à Taylor, dans le terminal : `./taylor fichier` (ou `taylor.exe fichier` sur Windows).
 
 Voici le résultat, Taylor l'affiche dans la console :
 
